@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="PAS.Asset.Api/PAS.Asset.Api.csproj" />
+  <Project Path="PAS.Asset.Application/PAS.Asset.Application.csproj" />
+  <Project Path="PAS.Asset.Domain/PAS.Asset.Domain.csproj" />
+  <Project Path="PAS.Asset.Infrastructure/PAS.Asset.Infrastructure.csproj" />
+</Solution>
