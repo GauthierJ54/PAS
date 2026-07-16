@@ -7,6 +7,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.10">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.10" />
+    <PackageReference Include="Microsoft.OpenApi" Version="2.10.0" />
+    <PackageReference Include="Scalar.AspNetCore" Version="2.16.12" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\PAS.Asset.Application\PAS.Asset.Application.csproj" />
     <ProjectReference Include="..\PAS.Asset.Infrastructure\PAS.Asset.Infrastructure.csproj" />
   </ItemGroup>

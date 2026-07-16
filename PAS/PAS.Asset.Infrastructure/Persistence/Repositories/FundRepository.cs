@@ -1,0 +1,34 @@
+﻿using Microsoft.EntityFrameworkCore;
+using PAS.Asset.Domain.Funds;
+
+namespace PAS.Asset.Infrastructure.Persistence.Repositories {
+    public sealed class FundRepository : IFundRepository {
+
+        private readonly AssetDbContext _context;
+
+        public FundRepository(AssetDbContext assetDbContext) {
+            _context = assetDbContext;
+        }
+
+        public async Task AddAsync(Fund fund, CancellationToken cancellationToken) {
+            await _context.Funds.AddAsync(fund, cancellationToken);
+        }
+
+        public Task<bool> ExistsByIsinAsync(string isin, CancellationToken cancellationToken) {
+            return _context.Funds.AnyAsync(f => f.Isin == isin, cancellationToken);
+        }
+
+        public Task<Fund?> GetByIdAsync(Guid id, CancellationToken cancellationToken) {
+            return _context.Funds.Include(f => f.Navs).FirstOrDefaultAsync(f => f.Id == id, cancellationToken);
+        }
+
+        public Task UpdateAsync(Fund fund, CancellationToken cancellationToken) {
+            _context.Funds.Update(fund);
+            return Task.CompletedTask;
+        }
+
+        public Task SaveChangesAsync(CancellationToken cancellationToken) {
+            return _context.SaveChangesAsync(cancellationToken);
+        }
+    }
+}
