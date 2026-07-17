@@ -22,16 +22,13 @@ public static class FundEndpoints {
             return Results.Ok(funds);
         });
 
-        endpoints.MapPost("/funds", async (
-            CreateFundRequest request,
-            ISender sender,
-            CancellationToken cancellationToken) => {
-                var fund = new CreateFundCommand(request.name, request.isin, request.currency);
+        endpoints.MapPost("/funds", async (CreateFundRequest request, ISender sender, CancellationToken cancellationToken) => {
+            var fund = new CreateFundCommand(request.name, request.isin, request.currency);
 
-                var id = await sender.Send(fund, cancellationToken);
+            var id = await sender.Send(fund, cancellationToken);
 
-                return Results.Created($"/funds/{id}", new { id });
-            });
+            return Results.Created($"/funds/{id}", new { id });
+        });
 
         endpoints.MapPut("/fundNav", async (
             AddFundNavRequest request,

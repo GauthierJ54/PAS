@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Aspire.RabbitMQ.Client" Version="13.4.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.10">
       <PrivateAssets>all</PrivateAssets>
@@ -22,7 +23,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PAS.Asset.Application\PAS.Asset.Application.csproj" />
-    <ProjectReference Include="..\PAS.Asset.Domain\PAS.Asset.Domain.csproj" />
   </ItemGroup>
 
 </Project>

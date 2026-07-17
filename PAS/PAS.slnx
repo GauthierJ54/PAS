@@ -5,4 +5,15 @@
     <Project Path="PAS.Asset.Domain/PAS.Asset.Domain.csproj" />
     <Project Path="PAS.Asset.Infrastructure/PAS.Asset.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/Calculation/">
+    <Project Path="PAS.Calculation.Api/PAS.Calculation.Api.csproj" />
+    <Project Path="PAS.Calculation.Application.Tests/PAS.Calculation.Application.Tests.csproj" />
+    <Project Path="PAS.Calculation.Application/PAS.Calculation.Application.csproj" Id="a40ae649-e5c4-4224-89fc-7a96bbe66997" />
+    <Project Path="PAS.Calculation.Domain.Tests/PAS.Calculation.Domain.Tests.csproj" />
+    <Project Path="PAS.Calculation.Domain/PAS.Calculation.Domain.csproj" Id="e528012a-cf50-42a4-af45-c153d1139a76" />
+    <Project Path="PAS.Calculation.Infrastructure/PAS.Calculation.Infrastructure.csproj" Id="6181b8f7-6611-4b5c-9ea8-dcc955b7c40b" />
+  </Folder>
+  <Project Path="AppHost/AppHost.csproj" Id="2f080c23-5d46-4129-8355-4730ba1fdd36" />
+  <Project Path="Common/PAS.Common.csproj" Id="ba0caf53-c9bd-4dc3-9346-eebe83b49ab0" />
+  <Project Path="PAS.Contracts/PAS.Contracts.csproj" Id="185e3091-bd7a-4bc6-8079-ad6e8872c4d2" />
 </Solution>

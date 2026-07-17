@@ -1,4 +1,4 @@
-﻿namespace PAS.Asset.Domain {
+﻿namespace PAS.Common {
     public interface ValueObject {
     }
 }

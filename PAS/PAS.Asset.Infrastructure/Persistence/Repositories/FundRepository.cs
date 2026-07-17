@@ -18,8 +18,12 @@ namespace PAS.Asset.Infrastructure.Persistence.Repositories {
             return _context.Funds.AnyAsync(f => f.Isin == isin, cancellationToken);
         }
 
-        public Task<Fund?> GetByIdAsync(Guid id, CancellationToken cancellationToken) {
-            return _context.Funds.Include(f => f.Navs).FirstOrDefaultAsync(f => f.Id == id, cancellationToken);
+        public Task<Fund?> GetByIdWithNavOfDayAsync(Guid id, DateTime date, CancellationToken cancellationToken) {
+            var start = date.Date;
+            var end = start.AddDays(1);
+
+            return _context.Funds.Include(f => f.Navs.Where(n => n.Date >= start && n.Date < end))
+                .FirstOrDefaultAsync(f => f.Id == id, cancellationToken);
         }
 
         public Task UpdateAsync(Fund fund, CancellationToken cancellationToken) {

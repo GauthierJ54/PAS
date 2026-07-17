@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using PAS.Asset.Domain.Funds;
+using PAS.Common.Exceptions;
 
 namespace PAS.Asset.Application.Funds.Commands.AddFundNav {
     public sealed class AddFundNavCommandHandler : IRequestHandler<AddFundNavCommand, Fund?> {
@@ -11,9 +12,9 @@ namespace PAS.Asset.Application.Funds.Commands.AddFundNav {
         }
 
         public async Task<Fund?> Handle(AddFundNavCommand request, CancellationToken cancellationToken) {
-            Fund? fund = await _fundRepository.GetByIdAsync(request.fundId, cancellationToken);
+            Fund? fund = await _fundRepository.GetByIdWithNavOfDayAsync(request.fundId, request.date, cancellationToken);
             if (fund == null) {
-                throw new InvalidOperationException($"Fund with ID '{request.fundId}' is not exists.");
+                throw new NotFoundException($"Fund with ID '{request.fundId}' is not exists.");
             }
             fund.AddNav(request.value, request.date);
             await _fundRepository.UpdateAsync(fund, cancellationToken);

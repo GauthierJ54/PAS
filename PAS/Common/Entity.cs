@@ -1,4 +1,4 @@
-﻿namespace PAS.Asset.Domain {
+﻿namespace PAS.Common {
     public class Entity {
         public Guid Id { get; private set; }
 

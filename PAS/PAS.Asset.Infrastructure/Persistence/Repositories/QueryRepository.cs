@@ -12,13 +12,13 @@ namespace PAS.Asset.Infrastructure.Persistence.Repositories {
         }
 
         public async Task<IEnumerable<FundDto>> GetAllAsync(CancellationToken cancellationToken) {
-            return await _context.Funds.AsNoTracking().Select(f => new FundDto (
+            return await _context.Funds.AsNoTracking().Select(f => new FundDto(
                 f.Id,
                 f.Name,
                 f.Isin,
                 f.Currency,
                 f.Status,
-                f.Navs.OrderByDescending(n => n.Date).Select(n => new FundNavDto (
+                f.Navs.OrderByDescending(n => n.Date).Select(n => new FundNavDto(
                     n.Value,
                     DateOnly.FromDateTime(n.Date)
                 )).ToList()
