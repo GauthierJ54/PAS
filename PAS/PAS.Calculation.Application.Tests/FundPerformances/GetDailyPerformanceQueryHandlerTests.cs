@@ -4,11 +4,9 @@ using PAS.Calculation.Domain.FundPerformances;
 
 namespace PAS.Calculation.Application.Tests.FundPerformances;
 
-public sealed class GetDailyPerformanceQueryHandlerTests
-{
+public sealed class GetDailyPerformanceQueryHandlerTests {
     [Fact]
-    public async Task Handle_WithTwoNavs_ReturnsDailyPerformance()
-    {
+    public async Task Handle_WithTwoNavs_ReturnsDailyPerformance() {
         var repository = new FakeFundPerformanceRepository();
         var fund = FundPerformance.Create(Guid.NewGuid());
         fund.AddNav(100m, new DateOnly(2026, 7, 16));
@@ -28,8 +26,7 @@ public sealed class GetDailyPerformanceQueryHandlerTests
     }
 
     [Fact]
-    public async Task Handle_WhenPerformanceCannotBeCalculated_ReturnsNull()
-    {
+    public async Task Handle_WhenPerformanceCannotBeCalculated_ReturnsNull() {
         var repository = new FakeFundPerformanceRepository();
         var handler = new GetDailyPerformanceQueryHandler(repository);
 

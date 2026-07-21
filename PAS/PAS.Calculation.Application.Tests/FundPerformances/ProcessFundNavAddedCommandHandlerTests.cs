@@ -4,11 +4,9 @@ using PAS.Calculation.Domain.FundPerformances;
 
 namespace PAS.Calculation.Application.Tests.FundPerformances;
 
-public sealed class ProcessFundNavAddedCommandHandlerTests
-{
+public sealed class ProcessFundNavAddedCommandHandlerTests {
     [Fact]
-    public async Task Handle_WhenFundDoesNotExist_CreatesFundAndAddsNav()
-    {
+    public async Task Handle_WhenFundDoesNotExist_CreatesFundAndAddsNav() {
         var repository = new FakeFundPerformanceRepository();
         var handler = new ProcessFundNavAddedCommandHandler(repository);
         var fundId = Guid.NewGuid();
@@ -26,8 +24,7 @@ public sealed class ProcessFundNavAddedCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_WhenFundExists_AddsNavWithoutAddingAggregateAgain()
-    {
+    public async Task Handle_WhenFundExists_AddsNavWithoutAddingAggregateAgain() {
         var repository = new FakeFundPerformanceRepository();
         var fund = FundPerformance.Create(Guid.NewGuid());
         repository.Seed(fund);
@@ -43,8 +40,7 @@ public sealed class ProcessFundNavAddedCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_WithDuplicateDate_ThrowsAndDoesNotSave()
-    {
+    public async Task Handle_WithDuplicateDate_ThrowsAndDoesNotSave() {
         var repository = new FakeFundPerformanceRepository();
         var fund = FundPerformance.Create(Guid.NewGuid());
         var date = new DateOnly(2026, 7, 17);
@@ -63,8 +59,7 @@ public sealed class ProcessFundNavAddedCommandHandlerTests
     private static ProcessFundNavAddedCommand CreateCommand(
         Guid fundId,
         DateOnly date,
-        decimal value)
-    {
+        decimal value) {
         return new ProcessFundNavAddedCommand(
             Guid.NewGuid(),
             fundId,

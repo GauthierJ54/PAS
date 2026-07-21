@@ -1,7 +1,7 @@
 ﻿using PAS.Asset.Domain.Common;
 using PAS.Asset.Domain.Funds.Events;
 using PAS.Asset.Domain.Funds.Exceptions;
-using PAS.Common;
+using PAS.Common.DDD;
 
 namespace PAS.Asset.Domain.Funds;
 

@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using PAS.Common.Exceptions;
 
-namespace PAS.Asset.Api.ExceptionHandling;
+namespace PAS.Common.Exceptions;
 
 public sealed class GlobalExceptionHandler : IExceptionHandler {
     public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken) {
@@ -27,6 +27,18 @@ public sealed class GlobalExceptionHandler : IExceptionHandler {
                 Status = StatusCodes.Status409Conflict,
                 Title = "Conflit de ressource",
                 Detail = conflictException.Message,
+            },
+
+            InvalidOperationException => new ProblemDetails {
+                Status = StatusCodes.Status409Conflict,
+                Title = "Conflit métier",
+                Detail = exception.Message
+            },
+
+            ArgumentException => new ProblemDetails {
+                Status = StatusCodes.Status422UnprocessableEntity,
+                Title = "Données métier invalides",
+                Detail = exception.Message
             },
 
             _ => new ProblemDetails {

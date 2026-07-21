@@ -1,7 +1,7 @@
 using PAS.Asset.Api.Endpoints.Funds;
-using PAS.Asset.Api.ExceptionHandling;
 using PAS.Asset.Application;
 using PAS.Asset.Infrastructure;
+using PAS.Common.Exceptions;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,7 +20,7 @@ builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.AddRabbitMQClient("messaging");
- 
+
 var app = builder.Build();
 
 app.UseExceptionHandler();

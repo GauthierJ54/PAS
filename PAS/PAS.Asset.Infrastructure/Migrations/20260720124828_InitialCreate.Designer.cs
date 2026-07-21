@@ -12,7 +12,7 @@ using PAS.Asset.Infrastructure.Persistence;
 namespace PAS.Asset.Infrastructure.Migrations
 {
     [DbContext(typeof(AssetDbContext))]
-    [Migration("20260716062456_InitialCreate")]
+    [Migration("20260720124828_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -20,6 +20,7 @@ namespace PAS.Asset.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasDefaultSchema("asset")
                 .HasAnnotation("ProductVersion", "10.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
@@ -54,7 +55,7 @@ namespace PAS.Asset.Infrastructure.Migrations
                     b.HasIndex("Isin")
                         .IsUnique();
 
-                    b.ToTable("Funds");
+                    b.ToTable("Funds", "asset");
                 });
 
             modelBuilder.Entity("PAS.Asset.Domain.Funds.FundNav", b =>
@@ -71,7 +72,7 @@ namespace PAS.Asset.Infrastructure.Migrations
 
                     b.HasKey("FundId", "Date");
 
-                    b.ToTable("FundNav");
+                    b.ToTable("FundNav", "asset");
                 });
 
             modelBuilder.Entity("PAS.Asset.Domain.Funds.FundNav", b =>

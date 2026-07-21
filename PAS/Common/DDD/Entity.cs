@@ -1,4 +1,4 @@
-﻿namespace PAS.Common {
+﻿namespace PAS.Common.DDD {
     public class Entity {
         public Guid Id { get; private set; }
 

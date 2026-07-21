@@ -1,4 +1,4 @@
-﻿using PAS.Common;
+﻿using PAS.Common.DDD;
 
 namespace PAS.Calculation.Domain.FundPerformances {
     public sealed record NavPoint : ValueObject {

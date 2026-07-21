@@ -5,19 +5,16 @@ using PAS.Calculation.Domain.FundPerformances;
 namespace PAS.Calculation.Application.FundPerformances.Queries.GetDailyPerformance;
 
 public sealed class GetDailyPerformanceQueryHandler
-    : IRequestHandler<GetDailyPerformanceQuery, DailyPerformanceDto?>
-{
+    : IRequestHandler<GetDailyPerformanceQuery, DailyPerformanceDto?> {
     private readonly IFundPerformanceRepository _repository;
 
-    public GetDailyPerformanceQueryHandler(IFundPerformanceRepository repository)
-    {
+    public GetDailyPerformanceQueryHandler(IFundPerformanceRepository repository) {
         _repository = repository;
     }
 
     public async Task<DailyPerformanceDto?> Handle(
         GetDailyPerformanceQuery request,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) {
         var fundPerformance = await _repository.GetByIdAsync(
             request.FundId,
             cancellationToken);
