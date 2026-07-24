@@ -46,7 +46,6 @@ public class Fund : Entity, ISoftDeletable {
         var existingNav = _navs.FirstOrDefault(n => DateTime.Equals(n.Date, date));
         if (existingNav != null) _navs.Remove(existingNav);
         _navs.Add(insertNav);
-        _domainEvents.Add(new FundNavUpdatedDomainEvent(Id, date, value));
     }
 
     public void UpdateStatus(FundStatus newStatus) {
@@ -72,18 +71,15 @@ public class Fund : Entity, ISoftDeletable {
     public void SoftDelete() {
         if (DeletedAtUtc is not null) throw new InvalidOperationException("Le fonds est déjà supprimé.");
         DeletedAtUtc = DateTime.UtcNow;
+        _domainEvents.Add(new FundSoftDeleteDomainEvent(Id));
     }
 
     public void SoftDeleteNav(DateTime date) {
-        var existingNav = _navs.FirstOrDefault(
-            n => n.Date.Date == date.Date &&
-                 n.DeletedAtUtc is null);
+        var existingNav = _navs.FirstOrDefault(n => n.Date.Date == date.Date && n.DeletedAtUtc is null);
 
-        if (existingNav is null) {
-            throw new FundNavNotFoundException(date);
-        }
-
+        if (existingNav is null) throw new FundNavNotFoundException(date);
         existingNav.SoftDelete();
+        _domainEvents.Add(new FundNavSoftDeleteDomainEvent(Id, date));
     }
 
     public IReadOnlyList<IDomainEvent> GetDomainEvents() => _domainEvents.AsReadOnly();

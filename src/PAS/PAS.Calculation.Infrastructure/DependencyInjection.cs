@@ -30,6 +30,8 @@ public static class DependencyInjection {
         services.AddScoped<IFundPerformanceRepository, FundPerformanceRepository>();
 
         services.AddHostedService<FundNavAddedConsumer>();
+        services.AddHostedService<FundNavSoftDeleteConsumer>();
+        services.AddHostedService<FundSoftDeleteConsumer>();
 
         return services;
     }

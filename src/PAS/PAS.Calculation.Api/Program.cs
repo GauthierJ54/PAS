@@ -12,6 +12,34 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 // OpenAPI
 builder.Services.AddOpenApi();
 
+// Authentication
+builder.Services
+    .AddAuthentication()
+    .AddKeycloakJwtBearer(
+        serviceName: "keycloak",
+        realm: "pas",
+        options => {
+            options.Audience = "pas-api";
+            options.MapInboundClaims = false;
+
+            if (builder.Environment.IsDevelopment()) {
+                options.Authority =
+                    "https://localhost:8080/realms/pas";
+
+                options.RequireHttpsMetadata = false;
+
+                options.BackchannelHttpHandler =
+                    new HttpClientHandler {
+                        ServerCertificateCustomValidationCallback =
+                            HttpClientHandler
+                                .DangerousAcceptAnyServerCertificateValidator
+                    };
+            }
+        });
+
+// Authorization
+builder.Services.AddAuthorization();
+
 // Application
 builder.Services.AddApplication();
 
@@ -23,6 +51,8 @@ builder.AddRabbitMQClient("messaging");
 var app = builder.Build();
 
 app.UseExceptionHandler();
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapFundPerformanceEndpoints();
 
 if (app.Environment.IsDevelopment()) {
@@ -34,5 +64,7 @@ if (app.Environment.IsDevelopment()) {
     });
 }
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment()) {
+    app.UseHttpsRedirection();
+}
 app.Run();

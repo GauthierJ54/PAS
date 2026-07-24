@@ -33,6 +33,15 @@ namespace PAS.Calculation.Domain.FundPerformances {
             _navs[index] = updatedNav;
         }
 
+        public void DeleteNav(DateOnly date) {
+            var index = _navs.FindIndex(n => n.Date == date);
+            if (index < 0) {
+                throw new InvalidOperationException(
+                    $"Aucune NAV n'existe pour la date {date}.");
+            }
+            _navs.RemoveAt(index);
+        }
+
         public PerformanceResult? GetDailyPerformance(DateOnly date) {
             var nav = _navs.FirstOrDefault(n => n.Date == date);
             if (nav == null) return null;

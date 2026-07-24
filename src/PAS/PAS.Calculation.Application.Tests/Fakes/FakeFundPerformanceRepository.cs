@@ -31,4 +31,9 @@ internal sealed class FakeFundPerformanceRepository : IFundPerformanceRepository
     public void Seed(FundPerformance fundPerformance) {
         _funds.Add(fundPerformance.Id, fundPerformance);
     }
+
+    public Task DeleteAsync(Guid fundId, CancellationToken cancellationToken) {
+        _funds.Remove(fundId);
+        return Task.CompletedTask;
+    }
 }

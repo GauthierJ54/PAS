@@ -1,14 +1,18 @@
 using MediatR;
+using PAS.Asset.Application.Abstractions.Messaging;
 using PAS.Asset.Domain.Funds;
+using PAS.Asset.Domain.Funds.Events;
 using PAS.Common.Exceptions;
 
 namespace PAS.Asset.Application.Funds.Commands.SoftDeleteFundNav {
     public sealed class SoftDeleteFundNavCommandHandler : IRequestHandler<SoftDeleteFundNavCommand> {
 
         private readonly IFundRepository _fundRepository;
+        private readonly IFundNavSoftDeleteOutbox _outbox;
 
-        public SoftDeleteFundNavCommandHandler(IFundRepository fundRepository) {
+        public SoftDeleteFundNavCommandHandler(IFundRepository fundRepository, IFundNavSoftDeleteOutbox fundNavSoftDeleteOutbox) {
             _fundRepository = fundRepository;
+            _outbox = fundNavSoftDeleteOutbox;
         }
 
         public async Task Handle(SoftDeleteFundNavCommand request, CancellationToken cancellationToken) {
@@ -23,6 +27,9 @@ namespace PAS.Asset.Application.Funds.Commands.SoftDeleteFundNav {
             }
 
             fund.SoftDeleteNav(request.DateTime);
+
+            var domainEvent = fund.GetDomainEvents().OfType<FundNavSoftDeleteDomainEvent>().Single();
+            _outbox.Add(domainEvent);
 
             await _fundRepository.SaveChangesAsync(cancellationToken);
         }

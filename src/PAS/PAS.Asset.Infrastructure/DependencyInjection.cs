@@ -18,10 +18,7 @@ public static class DependencyInjection {
         // Enregistrement du DbContext
         services.AddDbContext<AssetDbContext>(options =>
         {
-            var connectionString =
-                configuration.GetConnectionString("pas")
-                ?? throw new InvalidOperationException(
-                    "La chaîne de connexion 'pas' est introuvable.");
+            var connectionString = configuration.GetConnectionString("pas") ?? throw new InvalidOperationException("La chaîne de connexion 'pas' est introuvable.");
 
             options.UseSqlServer(
                 connectionString,
@@ -38,6 +35,8 @@ public static class DependencyInjection {
         services.AddScoped<IFundRepository, FundRepository>();
         services.AddScoped<IQueryRepository, QueryRepository>();
         services.AddScoped<IFundNavAddedOutbox, FundNavAddedOutbox>();
+        services.AddScoped<IFundSoftDeleteOutbox, FundSoftDeleteOutbox>();
+        services.AddScoped<IFundNavSoftDeleteOutbox, FundNavSoftDeleteOutbox>();
 
         services.AddSingleton<IRabbitMqPublisher, RabbitMqPublisher>();
 

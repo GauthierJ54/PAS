@@ -5,5 +5,7 @@ public interface IFundPerformanceRepository {
 
     Task AddAsync(FundPerformance fundPerformance, CancellationToken cancellationToken);
 
+    Task DeleteAsync(Guid fundId, CancellationToken cancellationToken);
+
     Task SaveChangesAsync(CancellationToken cancellationToken);
 }

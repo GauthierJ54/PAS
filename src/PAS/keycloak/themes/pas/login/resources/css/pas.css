@@ -1,0 +1,52 @@
+:root {
+    --pas-primary: #174f43;
+    --pas-primary-hover: #0d3c32;
+    --pas-background: #eef2ef;
+}
+
+body {
+    background: var(--pas-background) !important;
+}
+
+#kc-header-wrapper {
+    color: var(--pas-primary);
+    font-size: 0;
+}
+#kc-header-wrapper::before {
+    content: "";
+    display: block;
+    width: 300px;
+    height: 90px;
+    margin: 0 auto;
+    background-image: url("../img/logo.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+}
+
+/* Bouton principal */
+button[type="submit"],
+input[type="submit"],
+.pf-v5-c-button.pf-m-primary {
+    background-color: var(--pas-primary) !important;
+    border-color: var(--pas-primary) !important;
+}
+
+    button[type="submit"]:hover,
+    input[type="submit"]:hover,
+    .pf-v5-c-button.pf-m-primary:hover {
+        background-color: var(--pas-primary-hover) !important;
+    }
+
+/* Liens */
+a {
+    color: var(--pas-primary) !important;
+}
+
+/* Carte de connexion */
+.pf-v5-c-login__main,
+.card-pf {
+    border-radius: 14px;
+    box-shadow: 0 20px 60px rgba(23, 79, 67, 0.15);
+}
+
