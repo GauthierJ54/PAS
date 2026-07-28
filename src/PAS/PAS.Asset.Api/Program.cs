@@ -22,6 +22,7 @@ builder.Services
         options => {
             options.Audience = "pas-api";
             options.MapInboundClaims = false;
+            options.TokenValidationParameters.RoleClaimType = "roles";
 
             if (builder.Environment.IsDevelopment()) {
                 options.Authority =
@@ -39,7 +40,19 @@ builder.Services
         });
 
 // Authorization
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options => {
+    options.AddPolicy(
+        "FundsRead",
+        policy => policy.RequireRole("funds.read"));
+
+    options.AddPolicy(
+        "FundsWrite",
+        policy => policy.RequireRole("funds.write"));
+
+    options.AddPolicy(
+        "FundsDelete",
+        policy => policy.RequireRole("funds.delete"));
+});
 
 // Application
 builder.Services.AddApplication();

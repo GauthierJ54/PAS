@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PAS.Asset.Application.Abstractions;
 using PAS.Asset.Application.Funds.Models;
+using PAS.Asset.Domain.Funds;
 
 namespace PAS.Asset.Infrastructure.Persistence.Repositories {
     public sealed class QueryRepository : IQueryRepository {
@@ -23,6 +24,24 @@ namespace PAS.Asset.Infrastructure.Persistence.Repositories {
                     DateOnly.FromDateTime(n.Date)
                 )).ToList()
             )).ToListAsync(cancellationToken);
+        }
+
+        public async Task<IEnumerable<FundDto>> GetAllFilterAsync(string? name, string? isin, string? currency, FundStatus? fundStatus, CancellationToken cancellationToken) {
+            return await _context.Funds.Where(f => f.DeletedAtUtc == null &&
+                (string.IsNullOrEmpty(name) || f.Name.Contains(name)) &&
+                (string.IsNullOrEmpty(isin) || f.Isin.Contains(isin)) &&
+                (string.IsNullOrEmpty(currency) || f.Currency.Contains(currency)) &&
+                (!fundStatus.HasValue || f.Status == fundStatus.Value)).AsNoTracking().Select(f => new FundDto(
+                    f.Id,
+                    f.Name,
+                    f.Isin,
+                    f.Currency,
+                    f.Status,
+                    f.Navs.Where(n => n.DeletedAtUtc == null).OrderByDescending(n => n.Date).Select(n => new FundNavDto(
+                        n.Value,
+                        DateOnly.FromDateTime(n.Date)
+                    )).ToList()
+                )).ToListAsync(cancellationToken);
         }
 
         public async Task<FundDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken) {

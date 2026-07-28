@@ -13,7 +13,7 @@ var keycloak = builder
     .WithLifetime(ContainerLifetime.Persistent)
     .WithDataVolume("pas-keycloak-data")
     .WithBindMount("../keycloak/themes", "/opt/keycloak/themes", isReadOnly: true)
-    .WithArgs("--spi-theme--static-max-age=-1", "--spi-theme--cache-themes=false", "--spi-theme--cache-templates=false"); ;
+    .WithArgs("--spi-theme--static-max-age=-1", "--spi-theme--cache-themes=false", "--spi-theme--cache-templates=false");
 
 var sqlServer = builder.AddSqlServer("sqlServer")
     .WithLifetime(ContainerLifetime.Persistent)

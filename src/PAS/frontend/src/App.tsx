@@ -31,11 +31,13 @@ function App() {
   const [notice, setNotice] = useState('')
   const [error, setError] = useState('')
 
-  const [lookupId, setLookupId] = useState('')
   const [createForm, setCreateForm] = useState({ name: '', isin: '', currency: 'EUR' })
-  const [navForm, setNavForm] = useState({ fundId: '', value: '', date: today })
-  const [performanceForm, setPerformanceForm] = useState({ fundId: '', date: today })
+  const [navForm, setNavForm] = useState({ value: '', date: today })
+  const [performanceForm, setPerformanceForm] = useState({ date: today })
   const [performance, setPerformance] = useState<DailyPerformanceDto | null>(null)
+
+  const canWrite = keycloak.hasRealmRole('funds.write')
+  const canDelete = keycloak.hasRealmRole('funds.delete')
 
   const run = async (action: () => Promise<void>, successMessage?: string) => {
     setLoading(true)
@@ -52,20 +54,34 @@ function App() {
   }
 
   const loadFunds = useCallback(async () => {
-    const result = await AssetApi.getAllFunds()
-    setFunds(result)
+    if (!canWrite && !canDelete) {
+      const result = await AssetApi.getFundsFilter(undefined, undefined, undefined, 'Active')
+      setFunds(result)
+    } else {
+      const result = await AssetApi.getAllFunds()
+      setFunds(result)
+    }
   }, [])
 
   useEffect(() => {
     let active = true
-
-    AssetApi.getAllFunds()
-      .then((result) => {
-        if (active) setFunds(result)
-      })
-      .catch((caught) => {
-        if (active) setError(errorMessage(caught))
-      })
+    if (!canWrite && !canDelete) {
+      AssetApi.getFundsFilter(undefined, undefined, undefined, 'Active')
+        .then((result) => {
+          if (active) setFunds(result)
+        })
+        .catch((caught) => {
+          if (active) setError(errorMessage(caught))
+        })
+    } else {
+      AssetApi.getAllFunds()
+        .then((result) => {
+          if (active) setFunds(result)
+        })
+        .catch((caught) => {
+          if (active) setError(errorMessage(caught))
+        })
+    }
 
     return () => {
       active = false
@@ -76,7 +92,6 @@ function App() {
     await run(async () => {
       const fund = await AssetApi.getFundById(id)
       setSelectedFund(fund)
-      setLookupId(fund.id)
       setNavForm((current) => ({ ...current, fundId: fund.id }))
       setPerformanceForm((current) => ({ ...current, fundId: fund.id }))
     })
@@ -93,15 +108,28 @@ function App() {
   }
 
   const addNav = async (event: FormEvent) => {
+    if (!selectedFund) {
+      setError('Sélectionnez un fond avant d’ajouter une valeur liquidative.')
+      return
+    }
     event.preventDefault()
     await run(async () => {
-      await AssetApi.addFundNav(navForm.fundId, {
+      await AssetApi.addFundNav(selectedFund.id, {
         value: Number(navForm.value),
         date: `${navForm.date}T00:00:00.000Z`,
       })
       await loadFunds()
-      await showFund(navForm.fundId)
+      await showFund(selectedFund.id)
     }, 'Valeur liquidative ajoutée.')
+  }
+
+  const changeFundStatus = async (id: string, status: string) => {
+    if (!window.confirm('Modifier le statut de ce fond ?')) return
+    await run(async () => {
+      await AssetApi.updateFundStatus(id, status)
+      if (selectedFund?.id === id) setSelectedFund(null)
+      await loadFunds()
+    }, 'Statut du fond modifié.')
   }
 
   const deleteFund = async (id: string) => {
@@ -110,7 +138,7 @@ function App() {
       await AssetApi.softDeleteFund(id)
       if (selectedFund?.id === id) setSelectedFund(null)
       await loadFunds()
-    }, 'Fonds supprimé.')
+    }, ' supprimé.')
   }
 
   const deleteNav = async (fundId: string, date: string) => {
@@ -123,10 +151,14 @@ function App() {
   }
 
   const getPerformance = async (event: FormEvent) => {
+    if (!selectedFund) {
+      setError('Sélectionnez un fond avant de calculer la performance.')
+      return
+    }
     event.preventDefault()
     await run(async () => {
       const result = await CalculationApi.getDailyPerformance(
-        performanceForm.fundId,
+        selectedFund?.id,
         performanceForm.date,
       )
       setPerformance(result)
@@ -178,49 +210,42 @@ function App() {
             <span className="muted">Asset API</span>
           </div>
 
-          <form className="lookup" onSubmit={(event) => { event.preventDefault(); showFund(lookupId) }}>
-            <input value={lookupId} onChange={(event) => setLookupId(event.target.value)} placeholder="Identifiant du fond" required />
-            <button disabled={loading}>Rechercher par ID</button>
-          </form>
-
           <div className="table-wrap">
             <table>
-              <thead><tr><th>ID</th><th>Nom</th><th>ISIN</th><th>Devise</th><th>Statut</th><th>VNI</th><th></th></tr></thead>
+              <thead><tr><th>Nom</th><th>ISIN</th><th>Devise</th><th>Statut</th><th>VNI</th><th></th></tr></thead>
               <tbody>
                 {funds.map((fund) => (
-                  <tr key={fund.id} className={selectedFund?.id === fund.id ? 'selected-row' : ''}>
-                    <td>{fund.id}</td>
-                    <td><button className="text-button" onClick={() => showFund(fund.id)}>{fund.name}</button></td>
+                  <tr key={fund.id} onClick={() => showFund(fund.id)} className={selectedFund?.id === fund.id ? 'selected-row' : ''}>
+                    <td>{fund.name}</td>
                     <td className="mono">{fund.isin}</td>
                     <td>{fund.currency}</td>
                     <td><span className="status">{fundStatus[fund.status] ?? fund.status}</span></td>
                     <td>{fund.navs.length}</td>
-                    <td><button className="danger-link" onClick={() => deleteFund(fund.id)}>Supprimer</button></td>
+                    <td><button className="danger-link" disabled={!canDelete} onClick={() => deleteFund(fund.id)}>Supprimer</button></td>
                   </tr>
                 ))}
-                {!funds.length && <tr><td colSpan={7} className="empty">Aucun fond trouvé.</td></tr>}
+                {!funds.length && <tr><td colSpan={6} className="empty">Aucun fond trouvé.</td></tr>}
               </tbody>
             </table>
           </div>
         </section>
 
         <section className="panel">
-          <div className="panel-title"><div><span className="section-number">02</span><h2>Créer un fonds</h2></div></div>
+          <div className="panel-title"><div><span className="section-number">02</span><h2>Créer un fond</h2></div></div>
           <form className="stack" onSubmit={createFund}>
             <label>Nom<input value={createForm.name} onChange={(e) => setCreateForm({ ...createForm, name: e.target.value })} required /></label>
             <label>ISIN<input value={createForm.isin} onChange={(e) => setCreateForm({ ...createForm, isin: e.target.value })} required /></label>
             <label>Devise<input value={createForm.currency} onChange={(e) => setCreateForm({ ...createForm, currency: e.target.value.toUpperCase() })} maxLength={3} required /></label>
-            <button disabled={loading}>Créer le fond</button>
+            <button disabled={loading || !canWrite}>Créer le fond</button>
           </form>
         </section>
 
         <section className="panel">
           <div className="panel-title"><div><span className="section-number">03</span><h2>Ajouter une VNI</h2></div></div>
           <form className="stack" onSubmit={addNav}>
-            <label>ID du fond<input value={navForm.fundId} onChange={(e) => setNavForm({ ...navForm, fundId: e.target.value })} required /></label>
             <label>Valeur<input type="number" min="0" step="0.0001" value={navForm.value} onChange={(e) => setNavForm({ ...navForm, value: e.target.value })} required /></label>
             <label>Date<input type="date" value={navForm.date} onChange={(e) => setNavForm({ ...navForm, date: e.target.value })} required /></label>
-            <button disabled={loading}>Ajouter la VNI</button>
+            <button disabled={loading || !canWrite}>Ajouter la VNI</button>
           </form>
         </section>
 
@@ -233,14 +258,22 @@ function App() {
             <>
               <div className="fund-heading">
                 <div><h3>{selectedFund.name}</h3><span className="mono">{selectedFund.id}</span></div>
-                <div className="fund-meta"><span>{selectedFund.isin}</span><span>{selectedFund.currency}</span></div>
+                <div className="fund-meta">
+                  <select value={selectedFund.status} onChange={(e) => changeFundStatus(selectedFund.id, e.target.value)} disabled={!canWrite}>
+                    <option value="0">Brouillon</option>
+                    <option value="1">Actif</option>
+                    <option value="2">Inactif</option>
+                  </select>
+                  <span>{selectedFund.isin}</span>
+                  <span>{selectedFund.currency}</span>
+                </div>
               </div>
               <div className="nav-list">
                 {selectedFund.navs.map((nav) => (
                   <div className="nav-item" key={nav.date}>
                     <span>{nav.date}</span>
                     <strong>{nav.value.toLocaleString('fr-FR')} {selectedFund.currency}</strong>
-                    <button className="danger-link" onClick={() => deleteNav(selectedFund.id, nav.date)}>Supprimer</button>
+                    <button className="danger-link" disabled={!canDelete} onClick={() => deleteNav(selectedFund.id, nav.date)}>Supprimer</button>
                   </div>
                 ))}
                 {!selectedFund.navs.length && <p className="empty">Ce fond ne possède aucune VNI.</p>}
@@ -255,7 +288,6 @@ function App() {
             <span className="muted">Calculation API</span>
           </div>
           <form className="performance-form" onSubmit={getPerformance}>
-            <label>ID du fond<input value={performanceForm.fundId} onChange={(e) => setPerformanceForm({ ...performanceForm, fundId: e.target.value })} required /></label>
             <label>Date<input type="date" value={performanceForm.date} onChange={(e) => setPerformanceForm({ ...performanceForm, date: e.target.value })} required /></label>
             <button disabled={loading}>Calculer</button>
           </form>

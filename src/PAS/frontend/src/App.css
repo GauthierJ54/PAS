@@ -53,6 +53,7 @@ td { padding: 13px 12px; border-top: 1px solid #e5eae8; }
 .fund-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; padding-bottom: 18px; border-bottom: 1px solid #e2e8e5; }
 .fund-meta { display: flex; gap: 8px; }
 .fund-meta span { padding: 7px 10px; border-radius: 7px; background: #edf1ef; font-size: 12px; font-weight: 700; }
+.fund-meta select { padding: 7px 10px; border-radius: 7px; background: #edf1ef; font-size: 12px; font-weight: 700; font-family: 'Manrope', sans-serif; color: #174f43; border: 1px solid #d9dfdc; outline: none; }
 .nav-list { display: grid; }
 .nav-item { display: grid; grid-template-columns: 1fr 1fr auto; gap: 15px; align-items: center; padding: 14px 3px; border-bottom: 1px solid #e8ecea; }
 .nav-item strong { text-align: right; }

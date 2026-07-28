@@ -21,6 +21,7 @@ builder.Services
         options => {
             options.Audience = "pas-api";
             options.MapInboundClaims = false;
+            options.TokenValidationParameters.RoleClaimType = "roles";
 
             if (builder.Environment.IsDevelopment()) {
                 options.Authority =
@@ -38,8 +39,11 @@ builder.Services
         });
 
 // Authorization
-builder.Services.AddAuthorization();
-
+builder.Services.AddAuthorization(options => {
+    options.AddPolicy(
+        "FundsRead",
+        policy => policy.RequireRole("funds.read"));
+});
 // Application
 builder.Services.AddApplication();
 

@@ -18,6 +18,7 @@ public static class FundPerformanceEndpoints {
                         ? Results.NotFound(new {error = $"Aucune performance calculable pour le fonds '{fundId}' à la date {date}."})
                         : Results.Ok(performance);
                 }).WithName("GetDailyPerformance")
+                  .RequireAuthorization("FundsRead")
                   .Produces<DailyPerformanceDto>()
                   .Produces(StatusCodes.Status404NotFound);
 
