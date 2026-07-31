@@ -10,6 +10,7 @@ var rabbitMq = builder
 
 var keycloak = builder
     .AddKeycloak(name: "keycloak", port: 8080)
+    .WithOtlpExporter()
     .WithLifetime(ContainerLifetime.Persistent)
     .WithDataVolume("pas-keycloak-data")
     .WithBindMount("../keycloak/themes", "/opt/keycloak/themes", isReadOnly: true)

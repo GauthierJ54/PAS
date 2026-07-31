@@ -1,16 +1,12 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace PAS.Asset.Infrastructure.Migrations
-{
+namespace PAS.Asset.Infrastructure.Migrations {
     /// <inheritdoc />
-    public partial class addSoftDelete : Migration
-    {
+    public partial class addSoftDelete : Migration {
         /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
+        protected override void Up(MigrationBuilder migrationBuilder) {
             migrationBuilder.AddColumn<DateTime>(
                 name: "DeletedAtUtc",
                 schema: "asset",
@@ -27,8 +23,7 @@ namespace PAS.Asset.Infrastructure.Migrations
         }
 
         /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
+        protected override void Down(MigrationBuilder migrationBuilder) {
             migrationBuilder.DropColumn(
                 name: "DeletedAtUtc",
                 schema: "asset",

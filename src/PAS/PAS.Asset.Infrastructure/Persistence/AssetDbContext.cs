@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PAS.Asset.Domain.Funds;
-using PAS.Asset.Infrastructure.Persistence.Outbox;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace PAS.Asset.Infrastructure.Persistence {
     public sealed class AssetDbContext : DbContext {
@@ -8,8 +8,6 @@ namespace PAS.Asset.Infrastructure.Persistence {
         }
 
         public DbSet<Fund> Funds => Set<Fund>();
-
-        public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
             modelBuilder.HasDefaultSchema("asset");

@@ -61,7 +61,7 @@ function App() {
       const result = await AssetApi.getAllFunds()
       setFunds(result)
     }
-  }, [])
+  }, [canWrite, canDelete])
 
   useEffect(() => {
     let active = true
@@ -86,7 +86,7 @@ function App() {
     return () => {
       active = false
     }
-  }, [])
+  }, [canWrite, canDelete])
 
   const showFund = async (id: string) => {
     await run(async () => {
@@ -138,7 +138,7 @@ function App() {
       await AssetApi.softDeleteFund(id)
       if (selectedFund?.id === id) setSelectedFund(null)
       await loadFunds()
-    }, ' supprimé.')
+    }, 'Fond supprimé.')
   }
 
   const deleteNav = async (fundId: string, date: string) => {

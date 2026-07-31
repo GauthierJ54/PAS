@@ -8,11 +8,11 @@ namespace PAS.Asset.Application.Funds.Commands.AddFundNav {
     public sealed class AddFundNavCommandHandler : IRequestHandler<AddFundNavCommand, Fund?> {
 
         private readonly IFundRepository _fundRepository;
-        private readonly IFundNavAddedOutbox _outbox;
+        private readonly IFundNavAddedEventPublisher _eventPublisher;
 
-        public AddFundNavCommandHandler(IFundRepository fundRepository, IFundNavAddedOutbox fundNavAddedOutbox) {
+        public AddFundNavCommandHandler(IFundRepository fundRepository, IFundNavAddedEventPublisher eventPublisher) {
             _fundRepository = fundRepository;
-            _outbox = fundNavAddedOutbox;
+            _eventPublisher = eventPublisher;
         }
 
         public async Task<Fund?> Handle(AddFundNavCommand request, CancellationToken cancellationToken) {
@@ -23,8 +23,8 @@ namespace PAS.Asset.Application.Funds.Commands.AddFundNav {
             fund.AddNav(request.value, request.date);
             var domainEvent = fund.GetDomainEvents().OfType<FundNavAddedDomainEvent>().Single();
 
-            _outbox.Add(domainEvent);
             await _fundRepository.SaveChangesAsync(cancellationToken);
+            await _eventPublisher.PublishAsync(domainEvent, cancellationToken);
 
             fund.ClearDomainEvents();
 

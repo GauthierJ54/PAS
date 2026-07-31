@@ -8,11 +8,11 @@ namespace PAS.Asset.Application.Funds.Commands.SoftDeleteFundNav {
     public sealed class SoftDeleteFundNavCommandHandler : IRequestHandler<SoftDeleteFundNavCommand> {
 
         private readonly IFundRepository _fundRepository;
-        private readonly IFundNavSoftDeleteOutbox _outbox;
+        private readonly IFundNavSoftDeleteEventPublisher _eventPublisher;
 
-        public SoftDeleteFundNavCommandHandler(IFundRepository fundRepository, IFundNavSoftDeleteOutbox fundNavSoftDeleteOutbox) {
+        public SoftDeleteFundNavCommandHandler(IFundRepository fundRepository, IFundNavSoftDeleteEventPublisher eventPublisher) {
             _fundRepository = fundRepository;
-            _outbox = fundNavSoftDeleteOutbox;
+            _eventPublisher = eventPublisher;
         }
 
         public async Task Handle(SoftDeleteFundNavCommand request, CancellationToken cancellationToken) {
@@ -29,9 +29,10 @@ namespace PAS.Asset.Application.Funds.Commands.SoftDeleteFundNav {
             fund.SoftDeleteNav(request.DateTime);
 
             var domainEvent = fund.GetDomainEvents().OfType<FundNavSoftDeleteDomainEvent>().Single();
-            _outbox.Add(domainEvent);
-
             await _fundRepository.SaveChangesAsync(cancellationToken);
+            await _eventPublisher.PublishAsync(domainEvent, cancellationToken);
+
+            fund.ClearDomainEvents();
         }
     }
 }

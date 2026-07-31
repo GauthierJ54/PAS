@@ -30,12 +30,8 @@ namespace PAS.Asset.Infrastructure.Persistence.Repositories {
             var end = start.AddDays(1);
 
             return _context.Funds
-                .Include(f => f.Navs.Where(
-                    n => n.Date >= start &&
-                         n.Date < end))
-                .FirstOrDefaultAsync(
-                    f => f.Id == id && f.DeletedAtUtc == null,
-                    cancellationToken);
+                .Include(f => f.Navs.Where(n => n.Date >= start && n.Date < end && n.DeletedAtUtc == null))
+                .FirstOrDefaultAsync(f => f.Id == id && f.DeletedAtUtc == null, cancellationToken);
         }
 
         public Task SaveChangesAsync(CancellationToken cancellationToken) {

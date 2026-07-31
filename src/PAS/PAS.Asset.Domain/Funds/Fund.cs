@@ -36,9 +36,15 @@ public class Fund : Entity, ISoftDeletable {
     }
 
     public void AddNav(decimal value, DateTime date) {
-        if (_navs.Any(n => DateTime.Equals(n.Date, date))) throw new FundNavAlreadyExistsException(date);
-        _navs.Add(FundNav.Create(value, date));
-        _domainEvents.Add(new FundNavAddedDomainEvent(Id, date, value));
+        var normalizedDate = date.Date;
+        var activeNavAlreadyExists = _navs.Any(nav => nav.Date.Date == normalizedDate && nav.DeletedAtUtc is null);
+
+        if (activeNavAlreadyExists) {
+            throw new FundNavAlreadyExistsException(normalizedDate);
+        }
+
+        _navs.Add(FundNav.Create(value, normalizedDate));
+        _domainEvents.Add(new FundNavAddedDomainEvent(Id, normalizedDate, value));
     }
 
     public void UpdateNav(decimal value, DateTime date) {

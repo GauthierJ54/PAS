@@ -54,11 +54,11 @@ public static class FundEndpoints {
           .Produces<FundIdResponse>(StatusCodes.Status201Created);
 
         fundGroup.MapPut("/fundNav/{id:guid}", async (Guid id, AddFundNavRequest request, ISender sender, CancellationToken cancellationToken) => {
-                var fundNav = new AddFundNavCommand(id, request.value, request.date);
+            var fundNav = new AddFundNavCommand(id, request.value, request.date);
 
-                var fund = await sender.Send(fundNav, cancellationToken);
+            var fund = await sender.Send(fundNav, cancellationToken);
 
-                return Results.CreatedAtRoute(routeName: "GetFundById", routeValues: new { id }, value: new { id });
+            return Results.CreatedAtRoute(routeName: "GetFundById", routeValues: new { id }, value: new { id });
         }).WithName("AddFundNav")
           .RequireAuthorization("FundsWrite")
           .Produces<FundIdResponse>(StatusCodes.Status201Created);

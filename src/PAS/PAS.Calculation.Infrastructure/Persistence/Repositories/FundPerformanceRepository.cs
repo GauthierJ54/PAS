@@ -26,7 +26,7 @@ public sealed class FundPerformanceRepository
 
     public async Task DeleteAsync(Guid fundId, CancellationToken cancellationToken) {
         await _context.FundPerformances
-            .Where(fundPerformance =>fundPerformance.Id == fundId)
+            .Where(fundPerformance => fundPerformance.Id == fundId)
             .ExecuteDeleteAsync(cancellationToken);
     }
 

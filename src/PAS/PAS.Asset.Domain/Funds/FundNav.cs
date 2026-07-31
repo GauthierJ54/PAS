@@ -11,7 +11,7 @@ public record FundNav : ValueObject, ISoftDeletable {
 
     private FundNav(decimal value, DateTime date) {
         Value = value;
-        Date = date;
+        Date = date.Date;
         DeletedAtUtc = null;
     }
 

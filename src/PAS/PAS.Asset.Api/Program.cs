@@ -25,17 +25,13 @@ builder.Services
             options.TokenValidationParameters.RoleClaimType = "roles";
 
             if (builder.Environment.IsDevelopment()) {
-                options.Authority =
-                    "https://localhost:8080/realms/pas";
+                options.Authority = "https://localhost:8080/realms/pas";
 
                 options.RequireHttpsMetadata = false;
 
-                options.BackchannelHttpHandler =
-                    new HttpClientHandler {
-                        ServerCertificateCustomValidationCallback =
-                            HttpClientHandler
-                                .DangerousAcceptAnyServerCertificateValidator
-                    };
+                options.BackchannelHttpHandler = new HttpClientHandler {
+                    ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                };
             }
         });
 
@@ -59,8 +55,6 @@ builder.Services.AddApplication();
 
 // Infrastructure
 builder.Services.AddInfrastructure(builder.Configuration);
-
-builder.AddRabbitMQClient("messaging");
 
 var app = builder.Build();
 

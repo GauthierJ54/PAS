@@ -8,11 +8,11 @@ namespace PAS.Asset.Application.Funds.Commands.SoftDeleteFund {
     public sealed class SoftDeleteFundCommandHandler : IRequestHandler<SoftDeleteFundCommand> {
 
         private readonly IFundRepository _fundRepository;
-        private readonly IFundSoftDeleteOutbox _outbox;
+        private readonly IFundSoftDeleteEventPublisher _eventPublisher;
 
-        public SoftDeleteFundCommandHandler(IFundRepository fundRepository, IFundSoftDeleteOutbox fundSoftDeleteOutbox) {
+        public SoftDeleteFundCommandHandler(IFundRepository fundRepository, IFundSoftDeleteEventPublisher eventPublisher) {
             _fundRepository = fundRepository;
-            _outbox = fundSoftDeleteOutbox;
+            _eventPublisher = eventPublisher;
         }
 
         public async Task Handle(SoftDeleteFundCommand request, CancellationToken cancellationToken) {
@@ -25,10 +25,12 @@ namespace PAS.Asset.Application.Funds.Commands.SoftDeleteFund {
                     $"Fund with ID '{request.FundId}' does not exist.");
             }
             fund.SoftDelete();
-            var domainEvent = fund.GetDomainEvents().OfType<FundSoftDeleteDomainEvent>().Single();
-            _outbox.Add(domainEvent);
 
+            var domainEvent = fund.GetDomainEvents().OfType<FundSoftDeleteDomainEvent>().Single();
             await _fundRepository.SaveChangesAsync(cancellationToken);
+            await _eventPublisher.PublishAsync(domainEvent, cancellationToken);
+
+            fund.ClearDomainEvents();
         }
     }
 }
